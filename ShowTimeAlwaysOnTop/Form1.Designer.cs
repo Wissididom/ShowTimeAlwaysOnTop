@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.PB = new System.Windows.Forms.PictureBox();
             this.BtnShow = new System.Windows.Forms.Button();
             this.BtnHide = new System.Windows.Forms.Button();
@@ -132,6 +133,7 @@
             this.Controls.Add(this.BtnShow);
             this.Controls.Add(this.PB);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.Name = "Form1";
