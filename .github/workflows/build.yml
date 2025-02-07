@@ -1,0 +1,73 @@
+name: Build
+permissions:
+  "contents": "write"
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        dotnet-version: [ '8.0.x' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+      - name: Setup Nuget
+        uses: NuGet/setup-nuget@v2
+      - name: Install dependencies
+        run: nuget restore
+      - name: Build
+        run: msbuild.exe ShowTimeAlwaysOnTop.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
+      - name: Compress (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          Compress-Archive -Path ./ShowTimeAlwaysOnTop/bin/Release/* -DestinationPath ./ShowTimeAlwaysOnTop-${{ matrix.os }}.zip
+          ls .
+        shell: pwsh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShowTimeAlwaysOnTop-${{ matrix.os }}
+          path: ShowTimeAlwaysOnTop-${{ matrix.os }}.zip
+  create-release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # allows for tags access
+      - uses: actions/download-artifact@v4
+        name: Download artifact
+        with:
+          name: ShowTimeAlwaysOnTop-windows-latest
+          path: release-artifacts/
+      - name: Create release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          replacesArtifacts: true
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: "release-artifacts/*"
+          body: ${{ github.event.head_commit.message }}
+          prerelease: true
+          name: Nightly Release
+          tag: nightly-build
+      - name: Update nightly-build tag
+        run: |
+          git tag -f nightly-build
+          git push -f origin nightly-build
