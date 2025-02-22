@@ -39,20 +39,20 @@ jobs:
       - name: Compress (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          cd bin/Release/net8.0/linux-x64/publish
-          zip -r ../../../../../ShowTimeAlwaysOnTop-${{ matrix.os }}.zip *
-          cd ../../../../..
+          cd bin/Release/net9.0/publish
+          zip -r ../../../../ShowTimeAlwaysOnTop-${{ matrix.os }}.zip *
+          cd ../../../..
         shell: pwsh
       - name: Compress (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          cd bin/Release/net8.0/osx-arm64/publish
-          zip -r ../../../../../ShowTimeAlwaysOnTop-${{ matrix.os }}.zip *
-          cd ../../../../..
+          cd bin/Release/net9.0/publish
+          zip -r ../../../../ShowTimeAlwaysOnTop-${{ matrix.os }}.zip *
+          cd ../../../..
         shell: pwsh
       - name: Compress (Windows)
         if: matrix.os == 'windows-latest'
-        run: Compress-Archive -Path ./bin/Release/net8.0/win-x64/publish/* -DestinationPath ./ShowTimeAlwaysOnTop-${{ matrix.os }}.zip
+        run: Compress-Archive -Path ./bin/Release/net9.0/publish/* -DestinationPath ./ShowTimeAlwaysOnTop-${{ matrix.os }}.zip
         shell: pwsh
       - name: Upload artifact
         uses: actions/upload-artifact@v4
