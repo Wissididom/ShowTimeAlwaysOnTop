@@ -19,24 +19,40 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest]
         dotnet-version: [ '8.0.x' ]
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-      - name: Setup Nuget
-        uses: NuGet/setup-nuget@v2
+      - name: Setup .NET SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
       - name: Install dependencies
-        run: nuget restore
+        run: dotnet restore
       - name: Build
-        run: msbuild.exe ShowTimeAlwaysOnTop.sln /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+      - name: Publish
+        run: dotnet publish --configuration Release --no-restore
+      - name: Compress (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd bin/Release/net8.0/linux-x64/publish
+          zip -r ../../../../../ShowTimeAlwaysOnTop-${{ matrix.os }}.zip *
+          cd ../../../../..
+        shell: pwsh
+      - name: Compress (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd bin/Release/net8.0/osx-arm64/publish
+          zip -r ../../../../../ShowTimeAlwaysOnTop-${{ matrix.os }}.zip *
+          cd ../../../../..
+        shell: pwsh
       - name: Compress (Windows)
         if: matrix.os == 'windows-latest'
-        run: |
-          Compress-Archive -Path ./ShowTimeAlwaysOnTop/bin/Release/* -DestinationPath ./ShowTimeAlwaysOnTop-${{ matrix.os }}.zip
-          ls .
+        run: Compress-Archive -Path ./bin/Release/net8.0/win-x64/publish/* -DestinationPath ./ShowTimeAlwaysOnTop-${{ matrix.os }}.zip
         shell: pwsh
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -52,9 +68,19 @@ jobs:
         with:
           fetch-depth: 0 # allows for tags access
       - uses: actions/download-artifact@v4
-        name: Download artifact
+        name: Download Windows build
         with:
           name: ShowTimeAlwaysOnTop-windows-latest
+          path: release-artifacts/
+      - uses: actions/download-artifact@v4
+        name: Download MacOS build
+        with:
+          name: ShowTimeAlwaysOnTop-macos-latest
+          path: release-artifacts/
+      - uses: actions/download-artifact@v4
+        name: Download Ubuntu build
+        with:
+          name: ShowTimeAlwaysOnTop-ubuntu-latest
           path: release-artifacts/
       - name: Create release
         uses: ncipollo/release-action@v1.14.0
