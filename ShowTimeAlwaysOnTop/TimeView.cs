@@ -1,35 +1,30 @@
-﻿namespace ShowTimeAlwaysOnTop
+﻿using System.ComponentModel;
+
+namespace ShowTimeAlwaysOnTop
 {
     public partial class TimeView : Form
     {
-        private string sTime = string.Empty;
-        private Color cColor = Color.Black;
-        
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string Time
         {
-            get
-            {
-                return sTime;
-            }
+            get;
             set
             {
-                sTime = value;
+                field = value;
                 Invalidate();
             }
-        }
+        } = string.Empty;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Color Color
         {
-            get
-            {
-                return cColor;
-            }
+            get;
             set
             {
-                cColor = value;
+                field = value;
                 Invalidate();
             }
-        }
+        } = Color.Black;
 
         public TimeView()
         {
@@ -49,13 +44,13 @@
                 hour = "0" + hour;
             if (DateTime.Now.Minute < 10)
                 minute = "0" + minute;
-            sTime = string.Format("{0}:{1}", hour, minute);
+            Time = string.Format("{0}:{1}", hour, minute);
             Invalidate();
         }
 
         private void TimeView_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawString(sTime, Font, new SolidBrush(Color.FromArgb(255, Color)), 10F, 10F);
+            e.Graphics.DrawString(Time, Font, new SolidBrush(Color.FromArgb(255, Color)), 10F, 10F);
         }
     }
 }
