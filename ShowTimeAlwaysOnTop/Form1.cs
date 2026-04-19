@@ -15,37 +15,38 @@ namespace ShowTimeAlwaysOnTop
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (!File.Exists(Application.StartupPath + Path.DirectorySeparatorChar + "config.txt"))
+            var configPath = Path.Combine(Application.StartupPath, "config.txt");
+            if (!File.Exists(configPath))
                 return;
-            string[] Lines = File.ReadAllLines(Application.StartupPath + Path.DirectorySeparatorChar + "config.txt");
-            foreach (string Line in Lines)
+            var lines = File.ReadAllLines(configPath);
+            foreach (var line in lines)
             {
-                if (Line.Contains('='))
+                if (line.Contains('='))
                 {
-                    string Key = Line[..Line.IndexOf("=")];
-                    string Value = Line[(Line.IndexOf("=") + 1)..];
-                    switch (Key)
+                    var key = line[..line.IndexOf('=')];
+                    var value = line[(line.IndexOf('=') + 1)..];
+                    switch (key)
                     {
                         case "TimeX":
-                            Tv.Location = new Point(int.Parse(Value), Tv.Location.Y);
+                            Tv.Location = new Point(int.Parse(value), Tv.Location.Y);
                             break;
                         case "TimeY":
-                            Tv.Location = new Point(Tv.Location.X, int.Parse(Value));
+                            Tv.Location = new Point(Tv.Location.X, int.Parse(value));
                             break;
                         case "TimeFont":
-                            Tv.Font = new Font(new FontFamily(Value), Tv.Font.Size, FontStyle.Regular);
+                            Tv.Font = new Font(new FontFamily(value), Tv.Font.Size, FontStyle.Regular);
                             break;
                         case "TimeColorR":
-                            Tv.Color = Color.FromArgb(Tv.Color.A, int.Parse(Value), Tv.Color.G, Tv.Color.B);
+                            Tv.Color = Color.FromArgb(Tv.Color.A, int.Parse(value), Tv.Color.G, Tv.Color.B);
                             break;
                         case "TimeColorG":
-                            Tv.Color = Color.FromArgb(Tv.Color.A, Tv.Color.R, int.Parse(Value), Tv.Color.B);
+                            Tv.Color = Color.FromArgb(Tv.Color.A, Tv.Color.R, int.Parse(value), Tv.Color.B);
                             break;
                         case "TimeColorB":
-                            Tv.Color = Color.FromArgb(Tv.Color.A, Tv.Color.R, Tv.Color.G, int.Parse(Value));
+                            Tv.Color = Color.FromArgb(Tv.Color.A, Tv.Color.R, Tv.Color.G, int.Parse(value));
                             break;
                         case "TimeShown":
-                            if (bool.Parse(Value))
+                            if (bool.Parse(value))
                             {
                                 Tv.Show();
                                 TimeShown = true;
@@ -57,18 +58,18 @@ namespace ShowTimeAlwaysOnTop
                             }
                             break;
                         case "Transparency":
-                            TBOpacity.Value = int.Parse(Value);
+                            TBOpacity.Value = int.Parse(value);
                             Tv.Opacity = TBOpacity.Value / 100D;
                             break;
                         case "Size":
-                            TBSize.Value = int.Parse(Value);
+                            TBSize.Value = int.Parse(value);
                             Tv.Font = new(Tv.Font.FontFamily, TBSize.Value, FontStyle.Regular);
                             break;
                         case "X":
-                            Location = new Point(int.Parse(Value), Location.Y);
+                            Location = new Point(int.Parse(value), Location.Y);
                             break;
                         case "Y":
-                            Location = new Point(Location.X, int.Parse(Value));
+                            Location = new Point(Location.X, int.Parse(value));
                             break;
                     }
                 }
@@ -104,6 +105,14 @@ namespace ShowTimeAlwaysOnTop
             TimeShown = false;
         }
 
+        private void BtnChangeColor_Click(object sender, EventArgs e)
+        {
+            if (colorPicker.ShowDialog() == DialogResult.OK)
+            {
+                Tv.Color = colorPicker.Color;
+            }
+        }
+
         private void PB_MouseDown(object sender, MouseEventArgs e)
         {
             X = Control.MousePosition.X - Tv.Location.X;
@@ -124,10 +133,10 @@ namespace ShowTimeAlwaysOnTop
         {
             if (e.Button == MouseButtons.Left)
             {
-                Point NewPoint = Control.MousePosition;
-                NewPoint.X -= X;
-                NewPoint.Y -= Y;
-                Tv.Location = NewPoint;
+                var newPoint = Control.MousePosition;
+                newPoint.X -= X;
+                newPoint.Y -= Y;
+                Tv.Location = newPoint;
                 Application.DoEvents();
             }
         }
