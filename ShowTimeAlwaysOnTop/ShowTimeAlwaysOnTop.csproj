@@ -29,10 +29,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="migrate-config.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
