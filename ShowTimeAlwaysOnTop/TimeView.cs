@@ -38,13 +38,7 @@ namespace ShowTimeAlwaysOnTop
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            string hour = DateTime.Now.Hour.ToString();
-            string minute = DateTime.Now.Minute.ToString();
-            if (DateTime.Now.Hour < 10)
-                hour = "0" + hour;
-            if (DateTime.Now.Minute < 10)
-                minute = "0" + minute;
-            Time = string.Format("{0}:{1}", hour, minute);
+            Time = $"{DateTime.Now.Hour:D2}:{DateTime.Now.Minute:D2}";
             Invalidate();
         }
 
