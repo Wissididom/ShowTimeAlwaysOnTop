@@ -78,6 +78,7 @@ namespace ShowTimeAlwaysOnTop
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            var configPath = Path.Combine(Application.StartupPath, "config.txt");
             StringBuilder settings = new();
             settings.Append("TimeX=").AppendLine(Tv.Location.X.ToString());
             settings.Append("TimeY=").AppendLine(Tv.Location.Y.ToString());
@@ -90,7 +91,7 @@ namespace ShowTimeAlwaysOnTop
             settings.Append("Size=").AppendLine(TBSize.Value.ToString());
             settings.Append("X=").AppendLine(Location.X.ToString());
             settings.Append("Y=").AppendLine(Location.Y.ToString());
-            File.WriteAllText(Application.StartupPath + Path.DirectorySeparatorChar + "config.txt", settings.ToString());
+            File.WriteAllText(configPath, settings.ToString());
         }
 
         private void BtnShow_Click(object sender, EventArgs e)
