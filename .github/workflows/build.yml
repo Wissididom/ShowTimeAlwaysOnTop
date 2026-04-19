@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # allows for tags access
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         name: Download artifact
         with:
           name: ShowTimeAlwaysOnTop-windows-latest
