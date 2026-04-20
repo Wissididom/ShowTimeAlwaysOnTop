@@ -28,7 +28,7 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v3
       - name: Setup Nuget
-        uses: NuGet/setup-nuget@v2
+        uses: NuGet/setup-nuget@v4
       - name: Install dependencies
         run: nuget restore
       - name: Build
