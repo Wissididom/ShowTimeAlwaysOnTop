@@ -1,4 +1,5 @@
 name: Build
+
 permissions:
   "contents": "write"
 
@@ -25,14 +26,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v3
-      - name: Setup Nuget
-        uses: NuGet/setup-nuget@v4
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
       - name: Install dependencies
-        run: nuget restore
+        run: dotnet restore
       - name: Build
-        run: msbuild.exe ShowTimeAlwaysOnTop.slnx /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release"
+        run: dotnet build ShowTimeAlwaysOnTop.slnx -c Release --no-restore
       - name: Compress (Windows)
         if: matrix.os == 'windows-latest'
         run: |
